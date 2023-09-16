@@ -56,7 +56,7 @@ jobs:
             BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}-base
             TF_VERSION=${{ matrix.tf_version }}
           tags: |
-            ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-tf-${{ matrix.tf_version }}
+            ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-tf-${{ matrix.tf_version }}-mpl
           labels: |
             org.opencontainers.image.title=${{ github.event.repository.name }}
             org.opencontainers.image.description=${{ github.event.repository.description }}
@@ -103,7 +103,7 @@ jobs:
             BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}-base
             TF_VERSION=${{ matrix.tf_version }}
           tags: |
-            ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-tf-${{ matrix.tf_version }}
+            ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-tf-${{ matrix.tf_version }}-bsl
           labels: |
             org.opencontainers.image.title=${{ github.event.repository.name }}
             org.opencontainers.image.description=${{ github.event.repository.description }}
