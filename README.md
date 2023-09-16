@@ -1,4 +1,4 @@
-# tf-runner images
+# tf-runner-images
 
 This community repository offers Dockerfiles prepared to build `tf-runner` container images for [TF-Controller](https://github.com/weaveworks/tf-controller).
 These images incorporate MPL `terraform` binaries (up to v1.5.x) and BSL `terraform` binaries (from v1.6.0 going forward) from HashiCorp's [Terraform Community Edition](https://github.com/hashicorp/terraform).
