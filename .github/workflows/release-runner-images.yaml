@@ -23,6 +23,7 @@ jobs:
     strategy:
       matrix:
         tf_version: [1.0.11, 1.1.9, 1.2.9, 1.3.10, 1.4.7, 1.5.7]
+        runner: [runner, runner-aws]
     steps:
       - name: Check out
         uses: actions/checkout@v2
@@ -43,20 +44,20 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish multi-arch tf-runner MPL images
+      - name: Publish multi-arch tf-${{ matrix.runner }} MPL images
         uses: docker/build-push-action@v2
         with:
           push: true
           no-cache: true
           builder: ${{ steps.buildx.outputs.name }}
           context: .
-          file: ./runner.Dockerfile
+          file: ./${{ matrix.runner }}.Dockerfile
           platforms: linux/amd64,linux/arm64 #,linux/arm/v7
           build-args: |
             BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}-base
             TF_VERSION=${{ matrix.tf_version }}
           tags: |
-            ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-tf-${{ matrix.tf_version }}-mpl
+            ghcr.io/tf-controller/tf-${{ matrix.runner }}:${{ env.VERSION }}-tf-${{ matrix.tf_version }}-mpl
           labels: |
             org.opencontainers.image.title=${{ github.event.repository.name }}
             org.opencontainers.image.description=${{ github.event.repository.description }}
