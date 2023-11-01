@@ -8,9 +8,9 @@ ARG TF_VERSION
 USER root
 
 # terraform
-ADD https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_${TARGETARCH}.zip /usr/local/bin/terraform_${TF_VERSION}_linux_${TARGETARCH}.zip
-RUN unzip -q /usr/local/bin/terraform_${TF_VERSION}_linux_${TARGETARCH}.zip && \
-    rm /usr/local/bin/terraform_${TF_VERSION}_linux_${TARGETARCH}.zip && \
+ADD https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_${TARGETARCH}.zip terraform_${TF_VERSION}_linux_${TARGETARCH}.zip
+RUN unzip -q terraform_${TF_VERSION}_linux_${TARGETARCH}.zip -d /usr/local/bin/ && \
+    rm terraform_${TF_VERSION}_linux_${TARGETARCH}.zip && \
     chmod +x /usr/local/bin/terraform
 
 # Switch back to the non-root user after operations

@@ -52,7 +52,7 @@ jobs:
           file: ./${{ matrix.runner }}.Dockerfile
           platforms: linux/amd64,linux/arm64 #,linux/arm/v7
           build-args: |
-            BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}
+            BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}-base
             TF_VERSION=${{ matrix.tf_version }}
           tags: |
             ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-${{ matrix.runner }}-tf-${{ matrix.tf_version }}-mpl
@@ -98,7 +98,7 @@ jobs:
           file: ./${{ matrix.runner }}.Dockerfile
           platforms: linux/amd64,linux/arm64 #,linux/arm/v7
           build-args: |
-            BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}
+            BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}-base
             TF_VERSION=${{ matrix.tf_version }}
           tags: |
             ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-${{ matrix.runner }}-tf-${{ matrix.tf_version }}-bsl
