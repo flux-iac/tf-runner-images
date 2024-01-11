@@ -18,8 +18,60 @@ env:
   VERSION: ${{ github.event.inputs.version }}
 
 jobs:
+  release-tofu:
+    runs-on: ubuntu-latest
+    env:
+      INFRA_EXEC_NAME: tofu
+    strategy:
+      matrix:
+        tofu_version: [1.6.0-alpha1, 1.6.0-alpha2, 1.6.0-alpha3, 1.6.0-alpha4, 1.6.0-alpha5] 
+        runner: [base, aws]
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
+      - name: Setup Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-flags: "--debug"
+      - name: Login to Docker Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish multi-arch tofu-${{ matrix.runner }} images
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          no-cache: true
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: ./${{ matrix.runner }}.Dockerfile
+          platforms: linux/amd64,linux/arm64 #,linux/arm/v7
+          build-args: |
+            BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}-base
+            INFRA_EXEC_VERSION=${{ matrix.tofu_version }}
+            INFRA_EXEC_NAME=${{ env.INFRA_EXEC_NAME }}
+            INFRA_EXEC_URL_PREFIX=https://github.com/opentofu/opentofu/releases/download/v
+          tags: |
+            ghcr.io/tf-controller/${{ env.INFRA_EXEC_NAME }}-runner:${{ env.VERSION }}-${{ matrix.runner }}-tofu-${{ matrix.tofu_version }}
+          labels: |
+            org.opencontainers.image.title=${{ github.event.repository.name }}
+            org.opencontainers.image.description=${{ github.event.repository.description }}
+            org.opencontainers.image.url=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.VERSION }}
+            org.opencontainers.image.created=${{ env.BUILD_DATE }}
+
   release-mpl:
     runs-on: ubuntu-latest
+    env:
+      INFRA_EXEC_NAME: terraform
     strategy:
       matrix:
         tf_version: [1.0.11, 1.1.9, 1.2.9, 1.3.10, 1.4.7, 1.5.7]
@@ -53,7 +105,9 @@ jobs:
           platforms: linux/amd64,linux/arm64 #,linux/arm/v7
           build-args: |
             BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}-base
-            TF_VERSION=${{ matrix.tf_version }}
+            INFRA_EXEC_VERSION=${{ matrix.tf_version }}
+            INFRA_EXEC_NAME=${{ env.INFRA_EXEC_NAME }}
+            INFRA_EXEC_URL_PREFIX=https://releases.hashicorp.com/terraform/
           tags: |
             ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-${{ matrix.runner }}-tf-${{ matrix.tf_version }}-mpl
           labels: |
@@ -66,6 +120,8 @@ jobs:
 
   release-bsl:
     runs-on: ubuntu-latest
+    env:
+      INFRA_EXEC_NAME: terraform
     strategy:
       matrix:
         tf_version: [1.6.0-beta2]
@@ -99,7 +155,9 @@ jobs:
           platforms: linux/amd64,linux/arm64 #,linux/arm/v7
           build-args: |
             BASE_IMAGE=ghcr.io/weaveworks/tf-runner:${{ env.VERSION }}-base
-            TF_VERSION=${{ matrix.tf_version }}
+            INFRA_EXEC_VERSION=${{ matrix.tf_version }}
+            INFRA_EXEC_NAME=${{ env.INFRA_EXEC_NAME }}
+            INFRA_EXEC_URL_PREFIX=https://releases.hashicorp.com/terraform/
           tags: |
             ghcr.io/tf-controller/tf-runner:${{ env.VERSION }}-${{ matrix.runner }}-tf-${{ matrix.tf_version }}-bsl
           labels: |

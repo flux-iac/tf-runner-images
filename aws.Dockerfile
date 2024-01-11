@@ -21,7 +21,9 @@ RUN find /usr/local/aws-cli/v2/current/dist/awscli/botocore/data -name examples-
 
 FROM $BASE_IMAGE
 ARG TARGETARCH
-ARG TF_VERSION
+ARG INFRA_EXEC_VERSION
+ARG INFRA_EXEC_URL_PREFIX
+ARG INFRA_EXEC_NAME
 
 # Switch to root to have permissions for operations
 USER root
@@ -31,9 +33,10 @@ COPY --from=aws-builder /usr/local/aws-cli/ /usr/local/aws-cli/
 COPY --from=aws-builder /aws-cli-bin/ /usr/local/bin/
 
 # terraform
-ADD https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_${TARGETARCH}.zip terraform_${TF_VERSION}_linux_${TARGETARCH}.zip
-RUN unzip -q terraform_${TF_VERSION}_linux_${TARGETARCH}.zip -d /usr/local/bin/ && \
-    rm terraform_${TF_VERSION}_linux_${TARGETARCH}.zip && \
+ADD ${INFRA_EXEC_URL_PREFIX}${INFRA_EXEC_VERSION}/${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip ${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip
+RUN unzip -q ${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip -d /usr/local/bin/ && \
+    rm ${INFRA_EXEC_NAME}_${INFRA_EXEC_VERSION}_linux_${TARGETARCH}.zip && \
+    mv /usr/local/bin/${INFRA_EXEC_NAME} /usr/local/bin/terraform && \
     chmod +x /usr/local/bin/terraform
 
 # Switch back to the non-root user after operations
